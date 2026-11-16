@@ -1,0 +1,13 @@
+[project]
+name = "recruitment-proj"
+version = "0.1.0"
+description = "Virtual columns in pandas + sales.csv revenue pipeline"
+requires-python = ">=3.12"
+dependencies = [
+    "pandas>=3.1.1",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.2.0",
+]
