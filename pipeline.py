@@ -110,10 +110,10 @@ def revenue_by_region(df: pd.DataFrame) -> pd.DataFrame:
     return df.groupby("region", as_index=False)["revenue"].sum().round(2)
 
 
-def main() -> None:
+def run_pipeline(path: str) -> tuple[pd.DataFrame, dict]:
     report = {}
 
-    df = read_raw("./sales.csv")
+    df = read_raw(path)
     df, report["repeated_headers"] = remove_repeated_headers(df)
     df, total = split_total_row(df)
     df = normalize_column_names(df)
@@ -127,11 +127,16 @@ def main() -> None:
     df, report["restored_prices"] = restore_prices(df)
     df, report["removed_duplicates"] = remove_duplicates(df)
     df = add_revenue(df)
-    revenue_by_reg = revenue_by_region(df)
-    revenue_by_reg.to_csv("revenue_by_region.csv", index=False)
+
+    return revenue_by_region(df), report
+
+
+def main() -> None:
+    result, report = run_pipeline("sales.csv")
+    result.to_csv("revenue_by_region.csv", index=False)
 
     for name, value in report.items():
-        print(f"{name}:{value}")
+        print(f"{name}: {value}")
 
 
 if __name__ == "__main__":

@@ -9,6 +9,7 @@ from pipeline import (
     parse_numbers,
     remove_duplicates,
     restore_prices,
+    run_pipeline,
 )
 
 
@@ -91,3 +92,22 @@ def test_check_against_total():
 
     assert check_against_total(df, total_ok) is True
     assert check_against_total(df, total_bad) is False
+
+
+def test_run_pipeline_on_real_sales_file():
+    result, report = run_pipeline("sales.csv")
+
+    assert report == {
+        "repeated_headers": 1,
+        "changed_regions": 15,
+        "comma_prices": 7,
+        "space_quantity": 4,
+        "empty_discounts": 963,
+        "total_check_passed": True,
+        "filled_discounts": 963,
+        "restored_prices": 4,
+        "removed_duplicates": 5,
+    }
+    assert result["region"].tolist() == ["Central", "East", "North", "South", "West"]
+    assert result["revenue"].isna().sum() == 0
+    assert result.loc[result["region"] == "Central", "revenue"].iloc[0] == 515824.67
